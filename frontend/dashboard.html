@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard | Noty</title>
   <link rel="stylesheet" href="css/styles.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="dashboard-page">
   <div class="app-shell">
@@ -14,10 +15,14 @@
           <p class="eyebrow">Notas</p>
           <h1>Noty</h1>
         </div>
-        <button id="logoutButton" class="icon-button" type="button" title="Cerrar sesion">Salir</button>
+        <button id="logoutButton" class="icon-button" type="button" title="Cerrar sesion">
+          <i data-lucide="log-out" style="width:16px; height:16px;"></i> Salir
+        </button>
       </div>
 
-      <button id="newNoteButton" class="button primary full-width" type="button">Nueva nota</button>
+      <button id="newNoteButton" class="button primary full-width" type="button" title="Nueva nota">
+        <i data-lucide="plus" style="width:16px; height:16px;"></i> Nueva nota
+      </button>
       <div id="notesList" class="notes-list" aria-label="Lista de notas"></div>
     </aside>
 
@@ -25,9 +30,15 @@
       <div class="editor-topbar">
         <input id="noteTitle" class="title-input" type="text" placeholder="Titulo de la nota">
         <div class="editor-actions">
-          <button id="saveNoteButton" class="button primary" type="button" onclick="window.NotyNotes.saveNote()">Guardar</button>
-          <button id="deleteNoteButton" class="button danger" type="button" onclick="window.NotyNotes.deleteNote()">Eliminar</button>
-          <button id="exportPdfButton" class="button secondary" type="button" onclick="window.NotyNotes.exportNoteToPdf()">Exportar PDF</button>
+          <button id="saveNoteButton" class="button primary" type="button" onclick="window.NotyNotes.saveNote()">
+            <i data-lucide="save" style="width:16px; height:16px;"></i> Guardar
+          </button>
+          <button id="deleteNoteButton" class="button danger" type="button" onclick="window.NotyNotes.deleteNote()">
+            <i data-lucide="trash-2" style="width:16px; height:16px;"></i> Eliminar
+          </button>
+          <button id="exportPdfButton" class="button secondary" type="button" onclick="window.NotyNotes.exportNoteToPdf()">
+            <i data-lucide="file-down" style="width:16px; height:16px;"></i> Exportar PDF
+          </button>
         </div>
       </div>
 
@@ -35,10 +46,10 @@
         <button data-command="formatBlock" data-value="h1" type="button">H1</button>
         <button data-command="formatBlock" data-value="h2" type="button">H2</button>
         <button data-command="formatBlock" data-value="h3" type="button">H3</button>
-        <button data-command="bold" type="button">B</button>
-        <button data-command="italic" type="button">I</button>
-        <button data-command="insertUnorderedList" type="button">Lista</button>
-        <button data-command="insertOrderedList" type="button">1. Lista</button>
+        <button data-command="bold" type="button"><i data-lucide="bold" style="width:16px; height:16px;"></i></button>
+        <button data-command="italic" type="button"><i data-lucide="italic" style="width:16px; height:16px;"></i></button>
+        <button data-command="insertUnorderedList" type="button"><i data-lucide="list" style="width:16px; height:16px;"></i> Lista</button>
+        <button data-command="insertOrderedList" type="button"><i data-lucide="list-ordered" style="width:16px; height:16px;"></i> Lista</button>
         <button data-command="formatBlock" data-value="p" type="button">Parrafo</button>
       </div>
 
@@ -275,6 +286,8 @@
     } else {
       loadNotes();
     }
+
+    lucide.createIcons();
   </script>
 </body>
 </html>
