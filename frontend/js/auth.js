@@ -55,7 +55,7 @@ function setLoading(isLoading) {
 // ===== API ===================================================
 
 async function apiRequest(endpoint, data) {
-    const res = await fetch(`http://localhost:3001${endpoint}`, {
+    const res = await fetch(`http://localhost:3000/api${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
