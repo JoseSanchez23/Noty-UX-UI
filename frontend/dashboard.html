@@ -5,6 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard | Noty</title>
   <link rel="stylesheet" href="css/styles.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+  <style>
+    /* Estilos exclusivos de las mejoras UX del dashboard (Integrante 3). */
+    .notes-controls { display: grid; gap: var(--space-sm); }
+    .search-field { position: relative; }
+    .search-field svg { position: absolute; left: 12px; top: 50%; width: 16px; height: 16px; color: var(--text-tertiary); transform: translateY(-50%); pointer-events: none; }
+    .search-field input, .notes-filters select { width: 100%; min-height: 40px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-hover); color: var(--text-primary); font: inherit; }
+    .search-field input { padding: 0 12px 0 38px; }
+    .search-field input:focus, .notes-filters select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,.1); }
+    .notes-filters { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
+    .notes-filters select { padding: 0 8px; font-size: 12px; }
+    .notes-count { margin: -4px 0 0; color: var(--text-tertiary); font-size: 12px; }
+    .note-item-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .note-preview { overflow: hidden; color: var(--text-secondary); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+    .favorite-indicator { color: var(--warning) !important; font-size: 15px !important; }
+    .button.is-favorite { color: var(--warning); border-color: var(--warning); background: rgba(245,158,11,.08); }
+    .button:disabled { opacity: .55; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .note-editor:empty::before { content: attr(data-placeholder); color: var(--text-placeholder); pointer-events: none; }
+    @media (max-width: 768px) { .notes-filters { grid-template-columns: 1fr; } }
+  </style>
 </head>
 <body class="dashboard-page">
   <div class="app-shell">
@@ -14,20 +36,59 @@
           <p class="eyebrow">Notas</p>
           <h1>Noty</h1>
         </div>
-        <button id="logoutButton" class="icon-button" type="button" title="Cerrar sesion">Salir</button>
+        <button id="logoutButton" class="icon-button" type="button" title="Cerrar sesión" aria-label="Cerrar sesión">
+          <i data-lucide="log-out" style="width:16px; height:16px;"></i>
+        </button>
       </div>
 
-      <button id="newNoteButton" class="button primary full-width" type="button">Nueva nota</button>
+      <button id="newNoteButton" class="button primary full-width" type="button" title="Crear una nota nueva">
+        <i data-lucide="plus" style="width:16px; height:16px;"></i> Nueva nota
+      </button>
+
+      <div class="notes-controls" aria-label="Organización de notas">
+        <label class="sr-only" for="notesSearch">Buscar notas</label>
+        <div class="search-field">
+          <i data-lucide="search" aria-hidden="true"></i>
+          <input id="notesSearch" type="search" placeholder="Buscar notas..." autocomplete="off">
+        </div>
+
+        <div class="notes-filters">
+          <label class="sr-only" for="notesFilter">Filtrar notas</label>
+          <select id="notesFilter" title="Filtrar notas">
+            <option value="all">Todas</option>
+            <option value="favorites">Favoritas</option>
+          </select>
+
+          <label class="sr-only" for="notesSort">Ordenar notas</label>
+          <select id="notesSort" title="Ordenar notas">
+            <option value="updated-desc">Más recientes</option>
+            <option value="updated-asc">Más antiguas</option>
+            <option value="title-asc">Título A-Z</option>
+            <option value="title-desc">Título Z-A</option>
+          </select>
+        </div>
+      </div>
+
+      <p id="notesCount" class="notes-count" aria-live="polite"></p>
       <div id="notesList" class="notes-list" aria-label="Lista de notas"></div>
     </aside>
 
     <main class="editor-panel">
       <div class="editor-topbar">
-        <input id="noteTitle" class="title-input" type="text" placeholder="Titulo de la nota">
+        <input id="noteTitle" class="title-input" type="text" placeholder="Título de la nota" maxlength="120" aria-label="Título de la nota">
         <div class="editor-actions">
-          <button id="saveNoteButton" class="button primary" type="button" onclick="window.NotyNotes.saveNote()">Guardar</button>
-          <button id="deleteNoteButton" class="button danger" type="button" onclick="window.NotyNotes.deleteNote()">Eliminar</button>
-          <button id="exportPdfButton" class="button secondary" type="button" onclick="window.NotyNotes.exportNoteToPdf()">Exportar PDF</button>
+          <button id="favoriteNoteButton" class="button secondary" type="button" title="Marcar como favorita" aria-pressed="false">
+            <i data-lucide="star" style="width:16px; height:16px;"></i> Favorita
+          </button>
+          <button id="saveNoteButton" class="button primary" type="button">
+            <i data-lucide="save" style="width:16px; height:16px;"></i> Guardar
+          </button>
+          <button id="deleteNoteButton" class="button danger" type="button">
+            <i data-lucide="trash-2" style="width:16px; height:16px;"></i> Eliminar
+          </button>
+          <button id="exportPdfButton" class="button secondary" type="button">
+            <i data-lucide="file-down" style="width:16px; height:16px;"></i> Exportar PDF
+          </button>
         </div>
       </div>
 
@@ -35,246 +96,19 @@
         <button data-command="formatBlock" data-value="h1" type="button">H1</button>
         <button data-command="formatBlock" data-value="h2" type="button">H2</button>
         <button data-command="formatBlock" data-value="h3" type="button">H3</button>
-        <button data-command="bold" type="button">B</button>
-        <button data-command="italic" type="button">I</button>
-        <button data-command="insertUnorderedList" type="button">Lista</button>
-        <button data-command="insertOrderedList" type="button">1. Lista</button>
-        <button data-command="formatBlock" data-value="p" type="button">Parrafo</button>
+        <button data-command="bold" type="button" title="Negrita"><i data-lucide="bold" style="width:16px; height:16px;"></i></button>
+        <button data-command="italic" type="button" title="Cursiva"><i data-lucide="italic" style="width:16px; height:16px;"></i></button>
+        <button data-command="insertUnorderedList" type="button"><i data-lucide="list" style="width:16px; height:16px;"></i> Lista</button>
+        <button data-command="insertOrderedList" type="button"><i data-lucide="list-ordered" style="width:16px; height:16px;"></i> Lista</button>
+        <button data-command="formatBlock" data-value="p" type="button">Párrafo</button>
       </div>
 
-      <section id="noteEditor" class="note-editor" contenteditable="true" aria-label="Editor de contenido">
-        <p>Escribe tu nota aqui...</p>
-      </section>
-
-      <p id="message" class="message success" role="status">Dashboard v4 cargado.</p>
+      <section id="noteEditor" class="note-editor" contenteditable="true" aria-label="Editor de contenido" data-placeholder="Escribe tu nota aquí..."></section>
+      <p id="message" class="message" role="status" aria-live="polite">Cargando notas...</p>
     </main>
   </div>
 
-  <script>
-    const API_BASE_URL = window.location.port === "3000"
-      ? "/api"
-      : "http://localhost:3000/api";
-    const notesList = document.querySelector("#notesList");
-    const noteTitle = document.querySelector("#noteTitle");
-    const noteEditor = document.querySelector("#noteEditor");
-    const messageElement = document.querySelector("#message");
-    const newNoteButton = document.querySelector("#newNoteButton");
-    const logoutButton = document.querySelector("#logoutButton");
-    const toolbar = document.querySelector(".toolbar");
-
-    let notes = [];
-    let selectedNoteId = null;
-
-    function showMessage(text, type = "info") {
-      messageElement.textContent = text;
-      messageElement.className = `message ${type}`;
-    }
-
-    function getToken() {
-      return localStorage.getItem("noty_token");
-    }
-
-    function removeToken() {
-      localStorage.removeItem("noty_token");
-      localStorage.removeItem("noty_user");
-    }
-
-    async function apiRequest(path, options = {}) {
-      const token = getToken();
-
-      if (!token) {
-        window.location.href = "login.html";
-        throw new Error("Debes iniciar sesion.");
-      }
-
-      let response;
-
-      try {
-        response = await fetch(`${API_BASE_URL}${path}`, {
-          ...options,
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            ...(options.headers || {})
-          }
-        });
-      } catch (error) {
-        throw new Error("No se pudo conectar con el backend en http://localhost:3000.");
-      }
-
-      const responseText = await response.text();
-      let data;
-
-      try {
-        data = JSON.parse(responseText);
-      } catch (error) {
-        throw new Error("La API no devolvio JSON. Abre la app desde http://localhost:3000/login.html y verifica que el backend este activo.");
-      }
-
-      if (!response.ok) {
-        throw new Error(data.message || "Error inesperado en la API.");
-      }
-
-      return data;
-    }
-
-    function setEditor(note) {
-      selectedNoteId = note ? note.id : null;
-      noteTitle.value = note ? note.title : "";
-      noteEditor.innerHTML = note ? note.content : "<p>Escribe tu nota aqui...</p>";
-      renderNotesList();
-    }
-
-    function renderNotesList() {
-      notesList.innerHTML = "";
-
-      if (notes.length === 0) {
-        notesList.innerHTML = '<p class="empty-state">No hay notas todavia.</p>';
-        return;
-      }
-
-      notes.forEach((note) => {
-        const button = document.createElement("button");
-        button.className = note.id === selectedNoteId ? "note-item active" : "note-item";
-        button.type = "button";
-
-        const title = document.createElement("strong");
-        title.textContent = note.title;
-
-        const date = document.createElement("span");
-        date.textContent = new Date(note.updated_at).toLocaleString();
-
-        button.append(title, date);
-        button.addEventListener("click", () => setEditor(note));
-        notesList.appendChild(button);
-      });
-    }
-
-    async function loadNotes() {
-      try {
-        notes = await apiRequest("/notes");
-        setEditor(notes[0] || null);
-        showMessage("Editor listo.", "success");
-      } catch (error) {
-        showMessage(error.message, "error");
-      }
-    }
-
-    async function saveNote() {
-      showMessage("Guardando nota...");
-
-      const title = noteTitle.value.trim();
-      const content = noteEditor.innerHTML.trim();
-
-      if (!title || !content) {
-        showMessage("El titulo y el contenido son obligatorios.", "error");
-        return;
-      }
-
-      try {
-        if (selectedNoteId) {
-          await apiRequest(`/notes/${selectedNoteId}`, {
-            method: "PUT",
-            body: JSON.stringify({ title, content })
-          });
-          showMessage("Nota actualizada correctamente.", "success");
-        } else {
-          const data = await apiRequest("/notes", {
-            method: "POST",
-            body: JSON.stringify({ title, content })
-          });
-          selectedNoteId = data.note.id;
-          showMessage("Nota creada correctamente.", "success");
-        }
-
-        await loadNotes();
-      } catch (error) {
-        showMessage(error.message, "error");
-      }
-    }
-
-    async function deleteNote() {
-      if (!selectedNoteId) {
-        showMessage("Selecciona una nota antes de eliminar.", "error");
-        return;
-      }
-
-      if (!window.confirm("Quieres eliminar esta nota?")) {
-        return;
-      }
-
-      try {
-        await apiRequest(`/notes/${selectedNoteId}`, { method: "DELETE" });
-        showMessage("Nota eliminada correctamente.", "success");
-        await loadNotes();
-      } catch (error) {
-        showMessage(error.message, "error");
-      }
-    }
-
-    function exportNoteToPdf() {
-      if (!noteTitle.value.trim()) {
-        showMessage("Escribe un titulo antes de exportar.", "error");
-        return;
-      }
-
-      const printWindow = window.open("", "_blank");
-
-      if (!printWindow) {
-        showMessage("El navegador bloqueo la ventana de impresion.", "error");
-        return;
-      }
-
-      printWindow.document.write(`
-        <!DOCTYPE html>
-        <html lang="es">
-        <head>
-          <meta charset="UTF-8">
-          <title>${noteTitle.value}</title>
-          <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; margin: 32px; }
-          </style>
-        </head>
-        <body>
-          <h1>${noteTitle.value}</h1>
-          <div>${noteEditor.innerHTML}</div>
-        </body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.print();
-      showMessage("Usa Guardar como PDF en la ventana de impresion.", "success");
-    }
-
-    window.NotyNotes = {
-      saveNote,
-      deleteNote,
-      exportNoteToPdf
-    };
-
-    toolbar.addEventListener("click", (event) => {
-      const button = event.target.closest("button");
-
-      if (!button) {
-        return;
-      }
-
-      document.execCommand(button.dataset.command, false, button.dataset.value || null);
-      noteEditor.focus();
-    });
-
-    newNoteButton.addEventListener("click", () => setEditor(null));
-
-    logoutButton.addEventListener("click", () => {
-      removeToken();
-      window.location.href = "login.html";
-    });
-
-    if (!getToken()) {
-      window.location.href = "login.html";
-    } else {
-      loadNotes();
-    }
-  </script>
+  <script src="js/api.js"></script>
+  <script src="js/notes.js"></script>
 </body>
 </html>
