@@ -70,11 +70,11 @@ async function apiRequest(endpoint, data) {
 // ===== TOKENS ================================================
 
 function saveToken(token) {
-    localStorage.setItem('token', token);
+    localStorage.setItem('noty_token', token);
 }
 
 function saveUser(user) {
-    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('noty_user', JSON.stringify(user));
 }
 
 // ===== VALIDACIÓN EN TIEMPO REAL =============================
