@@ -113,6 +113,7 @@ Button: 14px | 600 | 0.01em
 - Grises neutros tipo Zinc (no azulados)
 - Paleta completa Light/Dark definida
 - Sistema de colores accesibles (WCAG AA)
+- Paleta de colores moderna y accesible implementada mediante variables `:root` en `styles.css`
 
 ---
 
@@ -340,6 +341,8 @@ Inspirado en Apple, Tailwind, Radix UI
 - Auth card: 100% ancho
 - Botones más altos (44px)
 
+**Diseño responsivo optimizado:** implementado con `@media` queries en `styles.css` para adaptar la interfaz en desktop, tablet y mobile.
+
 ---
 
 ## ♿ Accesibilidad
@@ -396,6 +399,39 @@ Implementado con `@media (prefers-color-scheme: dark)`
 - ✅ Sidebar compacta y sticky
 - ✅ Mejor legibilidad
 - ✅ Sensación premium
+
+---
+
+## 🔄 Decisiones previas que sí incorporamos, pero adaptadas
+
+Durante la revisión de la documentación anterior, se identificaron varios puntos que tenían valor y que sí fueron tomados en cuenta. En lugar de replicarlos tal cual, se aplicaron con una adaptación más coherente con la dirección final del producto.
+
+### 1. Tipografía elegante y moderna
+- Se aplicó la idea de usar una fuente más refinada.
+- Sin embargo, se decidió cambiar la propuesta por Plus Jakarta Sans porque ofrece una sensación más premium, limpia y legible que otras opciones más comunes.
+
+### 2. Espaciado más generoso
+- Se aplicó la intención de dar más aire visual a la interfaz.
+- Pero en vez de usar valores sueltos o poco consistentes, se implementó un sistema base de 8px para que todo quede más ordenado y escalable.
+
+### 3. Bordes más suaves
+- Se incorporó la idea de un diseño más amable y menos rígido.
+- No obstante, se decidió definir radios de 6, 8, 12 y 16px según el componente, en lugar de aplicar un redondeo excesivo o uniforme en todos los elementos.
+
+### 4. Sombras sutiles para profundidad
+- Se respetó la idea de generar sensación de profundidad.
+- Pero se eligieron sombras más suaves y naturales para evitar que la interfaz se vea pesada o demasiado decorativa.
+
+### 5. Feedback visual más claro en botones e interacciones
+- Se aplicó la necesidad de dar mejor respuesta a las acciones del usuario.
+- Sin embargo, se optó por un hover sutil con elevación ligera, en lugar de efectos demasiado agresivos o llamativos.
+
+### 6. Jerarquía visual más limpia
+- Se incorporó la idea de ordenar mejor la información y reducir la congestión visual.
+- Pero la solución final se orientó a un enfoque más minimalista, con mayor espacio en blanco y menos elementos decorativos, para lograr una experiencia más premium y usable.
+
+### Conclusión
+Estas decisiones previas no fueron ignoradas; fueron integradas y refinadas para que el resultado final fuera más consistente, más profesional y mejor alineado con la identidad visual de Noty.
 
 ---
 
